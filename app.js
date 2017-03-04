@@ -22,7 +22,7 @@ const app = express()
 
 app.use(express.static('public'))
 
-app.use(logger('dev'))
+app.use(logger('common'))
 
 app.get('/api/v1/pipelines', redirectPipelines)
 
