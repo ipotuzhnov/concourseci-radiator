@@ -4,7 +4,7 @@ var ParentBox = React.createClass({
    * Request from the server the list of pipelines
    */
   _loadPipelinesFromServer: function() {
-    
+
     $.ajax({
       url: this.props.url,
       dataType: 'json',
@@ -13,7 +13,7 @@ var ParentBox = React.createClass({
       ifModified: true,
       contentType: "application/json; charset=UTF-8",
       success: function(data,text,res) {
-        
+
         if (res.status === 200) {
           // change DOM only if 200, ignoring 304
           this.setState({data: data, status: '200', statusText: ''});
@@ -23,7 +23,7 @@ var ParentBox = React.createClass({
 
       error: function(xhr, status, err) {
         this.setState({
-                        data:[], 
+                        data:[],
                         status: xhr.status,
                         statusText: xhr.responseText
                       });
@@ -115,7 +115,7 @@ var Pipeline = React.createClass({
     return (
       <a key={ 'link-' + this.props.name } href={this.props.url} className="pipeline-link" target="_blank">
         <div key={ 'pipeline-' + this.props.name } className={ 'pipeline' + (this.props.paused ? ' paused' : '') }>
-          
+
           <h2 className="pipeline-name" >
             {this.props.name}
           </h2>
@@ -129,5 +129,5 @@ var Pipeline = React.createClass({
 });
 
 ReactDOM.render(
-  <ParentBox url="/api/v1/pipelines" pollInterval={4000} />,document.getElementById('content')
+  <ParentBox url="/api/v1/pipelines" pollInterval={30000} />,document.getElementById('content')
 );

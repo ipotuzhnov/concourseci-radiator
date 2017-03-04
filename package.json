@@ -1,0 +1,27 @@
+{
+  "name": "concourse-radiator",
+  "version": "1.0.0",
+  "description": "**Radiator** - is the simple page that shows pipeline job statuses in one place. It suits to be displayed on a TV screen to give an overview of your [ConcourseCI](http://concourse.ci) builds. The Radiator polls the Concourse every 4 seconds for an updates and shows the actual information.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipotuzhnov/concourseci-radiator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ipotuzhnov/concourseci-radiator/issues"
+  },
+  "homepage": "https://github.com/ipotuzhnov/concourseci-radiator#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "express": "^4.15.0",
+    "lru-cache": "^4.0.2",
+    "morgan": "^1.8.1",
+    "request-promise": "^4.1.1"
+  }
+}
