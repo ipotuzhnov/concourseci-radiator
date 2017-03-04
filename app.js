@@ -4,7 +4,7 @@ const logger  = require('morgan')
 const request = require('request-promise')
 const Promise = require('bluebird')
 const LRU     = require('lru-cache')
-const config = require('./config.1')
+const config = require('./config')
 
 // app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
 
