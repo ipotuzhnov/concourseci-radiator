@@ -22,6 +22,7 @@
     "express": "^4.15.0",
     "lru-cache": "^4.0.2",
     "morgan": "^1.8.1",
+    "request": "^2.81.0",
     "request-promise": "^4.1.1"
   }
 }
