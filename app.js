@@ -37,8 +37,8 @@ app.listen(process.env.PORT || 3001)
 /**
  * Proxy request to concource CI
  */
-function proxy (req, res, next) {
-    return fn => {
+function proxy (fn) {
+    return (req, res, next) => {
         return Promise.resolve()
             // Get fresh auth header
             .then(getAuthenticationToken)
