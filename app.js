@@ -4,7 +4,7 @@ const logger  = require('morgan')
 const request = require('request-promise')
 const Promise = require('bluebird')
 const LRU     = require('lru-cache')
-const config = require('./config')
+const config  = require('./config')
 
 // app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
 
@@ -24,7 +24,9 @@ app.use(express.static('public'))
 
 app.use(logger('common'))
 
-app.get('/api/v1/pipelines', redirectPipelines)
+app.get('/api/v1/pipelines', proxy(fetchPipelines))
+
+app.get('/api/v1/pipelines/:pipeline/jobs/:job/badge', proxy(fetchBadge))
 
 app.use((err, req, res, next) => {
     return res.status(500).send(err && err.message)
@@ -32,22 +34,19 @@ app.use((err, req, res, next) => {
 
 app.listen(process.env.PORT || 3001)
 
-
 /**
- * Make requests to the concourseCI and collect easy-to-parse output
- * about pipelines and job statuses
+ * Proxy request to concource CI
  */
-function redirectPipelines (req, res, next) {
-    return Promise.resolve()
-        // Get fresh auth header
-        .then(getAuthenticationToken)
-        // Get list of all the pipelines
-        .then(token => {
-            return token
-        })
-        .then(fetchPipelines)
-        .then(res.send.bind(res))
-        .catch(next)
+function proxy (req, res, next) {
+    return fn => {
+        return Promise.resolve()
+            // Get fresh auth header
+            .then(getAuthenticationToken)
+            // Get list of all the pipelines
+            .then(t => fn(t, req.params))
+            .then(res.send.bind(res))
+            .catch(next)
+    }
 }
 
 /**
@@ -84,9 +83,12 @@ function getAuthenticationToken () {
         })
 }
 
-
-// iterate over pipelines and find the status for each
+/**
+ * Make requests to the concourse CI and collect easy-to-parse output
+ * about pipelines and job statuses
+ */
 function fetchPipelines (token) {
+    // iterate over pipelines and find the status for each
     return Promise
         .try(request.bind(request, {
             url: baseUrl + '/api/v1/pipelines',
@@ -143,4 +145,23 @@ function fetchJobs (token, pipeline) {
                 status: 'non-exist'
             }
         })
+}
+
+/**
+ * Make requests to the concourse CI to fetch a badge
+ */
+function fetchBadge (token, params) {
+    if (!params) throw new Error('params is empty')
+
+    if (!params.pipeline) throw new Error('pipeline is not specified')
+
+    if (!params.job) throw new Error('job is not specified')
+
+    return Promise
+        .try(request.bind(request, {
+            url: baseUrl + `/api/v1/pipelines/${params.pipeline}/jobs/${params.job}/badge`,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+        }))
 }
