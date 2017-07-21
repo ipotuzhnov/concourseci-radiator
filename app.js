@@ -24,9 +24,9 @@ app.use(express.static('public'))
 
 app.use(logger('common'))
 
-app.get('/api/v1/pipelines', proxy(fetchPipelines))
+app.get('/api/v1/pipelines', proxyPipelines)
 
-app.get('/api/v1/pipelines/:pipeline/jobs/:job/badge', proxy(fetchBadge))
+app.get('/api/v1/pipelines/:pipeline/jobs/:job/badge', proxyBadge)
 
 app.use((err, req, res, next) => {
     return res.status(500).send(err && err.message)
@@ -37,16 +37,27 @@ app.listen(process.env.PORT || 3001)
 /**
  * Proxy request to concource CI
  */
-function proxy (fn) {
-    return (req, res, next) => {
-        return Promise.resolve()
-            // Get fresh auth header
-            .then(getAuthenticationToken)
-            // Get list of all the pipelines
-            .then(t => fn(t, req.params))
-            .then(res.send.bind(res))
-            .catch(next)
-    }
+function proxyPipelines (req, res, next) {
+    return Promise.resolve()
+        // Get fresh auth header
+        .then(getAuthenticationToken)
+        // Get list of all the pipelines
+        .then(fetchPipelines)
+        .then(res.send.bind(res))
+        .catch(next)
+}
+
+function proxyBadge (req, res, next) {
+    return Promise.resolve()
+        // Get fresh auth header
+        .then(getAuthenticationToken)
+        .then(t => fetchBadge(t, req.params))
+        .then(body => {
+            res.set('Content-Type', 'image/svg+xml')
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+            res.send(body)
+        })
+        .catch(next)
 }
 
 /**
